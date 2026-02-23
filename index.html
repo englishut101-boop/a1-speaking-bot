@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>A1 Speaking Bot</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 320px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    button {
+      padding: 10px 15px;
+      margin-top: 15px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    .bot {
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <div class="bot" id="botText">Hello! My name is Alex. What is your name?</div>
+  <button onclick="startListening()">🎤 Speak</button>
+</div>
+
+<script>
+  const botText = document.getElementById("botText");
+  const synth = window.speechSynthesis;
+
+  const questions = [
+    "Where are you from?",
+    "How old are you?",
+    "Do you work or are you a student?",
+    "Well, the bell is ringing. Nice talking to you!"
+  ];
+
+  let step = 0;
+
+  function speak(text) {
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = "en-US";
+    synth.speak(utterance);
+  }
+
+  speak(botText.textContent);
+
+  function startListening() {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+
+    recognition.lang = "en-US";
+    recognition.start();
+
+    recognition.onresult = function(event) {
+      const userSpeech = event.results[0][0].transcript;
+      handleResponse(userSpeech);
+    };
+
+    recognition.onerror = function() {
+      speak("Sorry, I didn't catch that. Could you repeat?");
+    };
+  }
+
+  function handleResponse(text) {
+    if (step === 0) {
+      botText.textContent = "Nice to meet you, " + text + ". " + questions[0];
+    } else if (step === 1) {
+      botText.textContent = "Oh, from " + text + "? Beautiful. " + questions[1];
+    } else if (step === 2) {
+      botText.textContent = "Okay, " + text + " years old. " + questions[2];
+    } else if (step === 3) {
+      botText.textContent = "Ah, you are a " + text + ". " + questions[3];
+    }
+
+    speak(botText.textContent);
+    step++;
+  }
+</script>
+
+</body>
+</html>
